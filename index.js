@@ -1,9 +1,8 @@
-const fs = require('fs')
 const brain = new (require('brain.js').NeuralNetwork)({
     hiddenLayers: [4],
     inputSize: 2,
     outputSize: 1
-}).fromJSON(JSON.parse(fs.readFileSync('model.json', 'utf8')))
+}).fromJSON(require('./model.json'))
 const prompt = require('prompt')
 prompt.message = ''
 
@@ -14,14 +13,14 @@ async function main() {
                 inches: {
                     required: true,
                     message: 'Inches should be a number',
-                    pattern: /^(?!\D)\d+(?!\D)$/g,
-                    description: 'Inches of snow'
+                    description: 'Inches of snow',
+                    type: 'number'
                 },
                 days: {
                     required: true,
                     message: 'Already used snow days should be a number',
-                    pattern: /^(?!\D)\d+(?!\D)$/g,
-                    description: 'Snow days you already had'
+                    description: 'Snow days you already had',
+                    type: 'number'
                 }
             }
         })
