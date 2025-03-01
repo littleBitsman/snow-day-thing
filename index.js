@@ -1,8 +1,15 @@
-const brain = new (require('brain.js').NeuralNetwork)({
-    hiddenLayers: [4],
+var brain = new (require('brain.js').NeuralNetwork)({
+    hiddenLayers: [50],
     inputSize: 2,
     outputSize: 1
-}).fromJSON(require('./model.json'))
+})
+const fs = require('fs')
+if (fs.existsSync('model.json')) {
+    brain = brain.fromJSON(require('./model.json'))
+} else {
+    brain.train(require('./trainingData.json'))
+    fs.writeFileSync('model.json', JSON.stringify(brain.toJSON()))
+}
 const prompt = require('prompt')
 prompt.message = ''
 
@@ -12,15 +19,21 @@ async function main() {
             properties: {
                 inches: {
                     required: true,
-                    message: 'Inches should be a number',
+                    message: 'Inches should be a positive number',
                     description: 'Inches of snow',
-                    type: 'number'
+                    conform: inp => {
+                        if (inp == 'exit') exit(0)
+                        return !isNaN(parseFloat(inp)) && parseFloat(inp) >= 0
+                    }
                 },
                 days: {
                     required: true,
-                    message: 'Already used snow days should be a number',
+                    message: 'Already used snow days should be a positive integer',
                     description: 'Snow days you already had',
-                    type: 'number'
+                    conform: inp => {
+                        if (inp == 'exit') exit(0)
+                        return !isNaN(parseInt(inp)) && parseInt(inp) >= 0
+                    }
                 }
             }
         })
